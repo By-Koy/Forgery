@@ -1,8 +1,10 @@
 package io.github.by_koy.forgery;
 
 import net.fabricmc.api.ModInitializer;
-
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,7 @@ public class Forgery implements ModInitializer {
 	// It is considered best practice to use your mod id as the logger's name.
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+	// public static final RegistryKey<PlacedFeature> PALLADIUM_ORE_PLACED_KEY = Registry.register(Registries.PLACED_FEATURE, id("ore_custom"));
 
 	@Override
 	public void onInitialize() {
@@ -21,7 +24,10 @@ public class Forgery implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Hello Fabric world!");
+		ModItems.initialize();
+		ModBlocks.initialize();
+
+		LOGGER.info("Forgery initialized!");
 	}
 
 	public static Identifier id(String path) {
