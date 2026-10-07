@@ -17,11 +17,15 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 public class ModBlocks {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-		.register((creativeTab) -> creativeTab.accept(ModBlocks.PALLADIUM_ORE.asItem()));
+            .register((creativeTab) -> creativeTab.accept(ModBlocks.PALLADIUM_ORE.asItem()));
+
+        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
+            .register((creativeTab) -> creativeTab.accept(ModBlocks.DEEPSLATE_PALLADIUM_ORE.asItem()));
     }
 
     // Create items
 	public static final Block PALLADIUM_ORE = create("palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops());
+    public static final Block DEEPSLATE_PALLADIUM_ORE = create("deepslate_palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops());
 
     // Method to attach the blocks to the game
     public static Block create(String name, BlockBehaviour.Properties settings) {

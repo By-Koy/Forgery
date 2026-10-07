@@ -1,5 +1,6 @@
 {
     "item.forgery.palladium_ingot": "palladium ingot",
     "item.forgery.raw_palladium": "raw palladium",
-    "block.forgery.palladium_ore": "palladium ore"
+    "block.forgery.palladium_ore": "palladium ore",
+    "block.forgery.deepslate_palladium_ore": "deepslate palladium ore"
 }
