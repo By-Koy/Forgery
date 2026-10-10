@@ -27,8 +27,8 @@ public class ForgeryFeatures {
     public static void configure(BootstrapContext<Feature> context) {
         LOGGER.info("Configuring Features!");
 
-        List<BlockReplacement> stoneRule = oreRules(Optional.of(BlockTags.STONE_ORE_REPLACEABLES), Optional.empty(), ModBlocks.PALLADIUM_ORE);
-        List<BlockReplacement> deepslateRule = oreRules(Optional.of(BlockTags.DEEPSLATE_ORE_REPLACEABLES), Optional.empty(), ModBlocks.DEEPSLATE_PALLADIUM_ORE);
+        List<BlockReplacement> stoneRule = oreRules(Optional.of(BlockTags.STONE_ORE_REPLACEABLES), Optional.empty(), ForgeryBlocks.PALLADIUM_ORE);
+        List<BlockReplacement> deepslateRule = oreRules(Optional.of(BlockTags.DEEPSLATE_ORE_REPLACEABLES), Optional.empty(), ForgeryBlocks.DEEPSLATE_PALLADIUM_ORE);
 
         List<BlockReplacement> palladiumOreConfig =
                 Stream.concat(

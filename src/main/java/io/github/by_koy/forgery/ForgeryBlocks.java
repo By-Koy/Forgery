@@ -14,18 +14,19 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
-public class ModBlocks {
+public class ForgeryBlocks {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-            .register((creativeTab) -> creativeTab.accept(ModBlocks.PALLADIUM_ORE.asItem()));
+            .register((creativeTab) -> creativeTab.accept(ForgeryBlocks.PALLADIUM_ORE.asItem()));
 
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-            .register((creativeTab) -> creativeTab.accept(ModBlocks.DEEPSLATE_PALLADIUM_ORE.asItem()));
+            .register((creativeTab) -> creativeTab.accept(ForgeryBlocks.DEEPSLATE_PALLADIUM_ORE.asItem()));
     }
 
-    // Create items
+    // Create blocks
 	public static final Block PALLADIUM_ORE = create("palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops());
     public static final Block DEEPSLATE_PALLADIUM_ORE = create("deepslate_palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops());
+    public static final Block MELTER = create("melter", BlockBehaviour.Properties.of().sound(SoundType.STONE));
 
     // Method to attach the blocks to the game
     public static Block create(String name, BlockBehaviour.Properties settings) {

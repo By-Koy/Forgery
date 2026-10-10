@@ -10,10 +10,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
-public class ModItems {
+public class ForgeryItems {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-		.register((creativeTab) -> creativeTab.accept(ModItems.PALLADIUM_INGOT));
+		.register((creativeTab) -> creativeTab.accept(ForgeryItems.PALLADIUM_INGOT));
     }
 
     // Create items
