@@ -23,8 +23,8 @@ public class Forgery implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		ModItems.initialize();
-		ModBlocks.initialize();
+		ForgeryItems.initialize();
+		ForgeryBlocks.initialize();
 
 		BiomeModifications.addFeature(
 				BiomeSelectors.foundInOverworld(),

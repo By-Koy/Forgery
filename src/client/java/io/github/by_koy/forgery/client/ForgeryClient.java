@@ -1,8 +1,7 @@
 package io.github.by_koy.forgery.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.by_koy.forgery.Forgery;
-import io.github.by_koy.forgery.client.render.ForgeryRenderer;
+import io.github.by_koy.forgery.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
@@ -10,8 +9,10 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 public class ForgeryClient implements ClientModInitializer {
@@ -22,8 +23,8 @@ public class ForgeryClient implements ClientModInitializer {
 
     KeyMapping sendToChatKey = KeyMappingHelper.registerKeyMapping(
             new KeyMapping(
-                    "key.example-mod.send_to_chat", // The translation key for the key mapping.
-                    InputConstants.Type.KEYBOARD, // The type of the keybinding; KEYSYM for keyboard, MOUSE for mouse.
+                    "key.forgery.send_to_chat", // The translation key for the key mapping.
+                    InputConstants.Type.KEYBOARD, // The type of the keybinding; KEYBOARD for keyboard, MOUSE for mouse.
                     InputConstants.KEY_J, // The keycode of the key.
                     CATEGORY // The category of the mapping.
             ));
@@ -31,6 +32,9 @@ public class ForgeryClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+
+        new ForgeryBlockEntities.Melter(BlockPos.ZERO, ForgeryBlocks.MELTER.defaultBlockState());
+        MenuScreens.register(ForgeryMenuTypes.MELTER, (MenuScreens.ScreenConstructor<MelterMenu, MelterScreen>) MelterScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (this.sendToChatKey.consumeClick()) {

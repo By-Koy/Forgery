@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "forgery:block/melter_front",
+    "side": "forgery:block/melter_side",
+    "top": "forgery:block/melter_top"
+  }
+}
