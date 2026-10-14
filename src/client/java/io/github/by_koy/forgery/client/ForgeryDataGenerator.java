@@ -13,6 +13,7 @@ public class ForgeryDataGenerator implements DataGeneratorEntrypoint {
 		FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();
 
 		pack.addProvider(ForgeryWorldGen::new);
+		pack.addProvider(ForgeryTags.ForgeryItemTags::new);
 	}
 
 	@Override
