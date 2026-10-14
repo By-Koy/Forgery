@@ -1,5 +1,6 @@
-package io.github.by_koy.forgery;
+package io.github.by_koy.forgery.menus;
 
+import io.github.by_koy.forgery.Forgery;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.flag.FeatureFlagSet;

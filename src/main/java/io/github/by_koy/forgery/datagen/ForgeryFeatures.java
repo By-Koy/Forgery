@@ -1,5 +1,7 @@
-package io.github.by_koy.forgery;
+package io.github.by_koy.forgery.datagen;
 
+import io.github.by_koy.forgery.Forgery;
+import io.github.by_koy.forgery.ForgeryBlocks;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceKey;

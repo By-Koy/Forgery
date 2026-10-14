@@ -2,6 +2,8 @@ package io.github.by_koy.forgery.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.by_koy.forgery.*;
+import io.github.by_koy.forgery.menus.ForgeryMenuTypes;
+import io.github.by_koy.forgery.menus.MelterMenu;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;

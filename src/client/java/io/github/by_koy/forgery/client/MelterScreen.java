@@ -1,7 +1,7 @@
 package io.github.by_koy.forgery.client;
 
 import io.github.by_koy.forgery.Forgery;
-import io.github.by_koy.forgery.MelterMenu;
+import io.github.by_koy.forgery.menus.MelterMenu;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.RenderPipelines;

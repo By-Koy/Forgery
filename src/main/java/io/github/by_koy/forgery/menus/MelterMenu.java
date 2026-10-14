@@ -1,4 +1,4 @@
-package io.github.by_koy.forgery;
+package io.github.by_koy.forgery.menus;
 
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;

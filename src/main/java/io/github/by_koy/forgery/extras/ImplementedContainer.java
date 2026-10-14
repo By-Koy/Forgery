@@ -1,4 +1,4 @@
-package io.github.by_koy.forgery;
+package io.github.by_koy.forgery.extras;
 
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.Container;

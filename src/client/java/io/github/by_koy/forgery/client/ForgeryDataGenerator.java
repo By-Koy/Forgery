@@ -1,7 +1,7 @@
 package io.github.by_koy.forgery.client;
 
-import io.github.by_koy.forgery.ForgeryFeatures;
-import io.github.by_koy.forgery.ForgeryPlacedFeatures;
+import io.github.by_koy.forgery.datagen.ForgeryFeatures;
+import io.github.by_koy.forgery.datagen.ForgeryPlacedFeatures;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.minecraft.core.RegistrySetBuilder;

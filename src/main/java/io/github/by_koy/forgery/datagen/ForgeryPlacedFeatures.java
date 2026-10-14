@@ -1,5 +1,6 @@
-package io.github.by_koy.forgery;
+package io.github.by_koy.forgery.datagen;
 
+import io.github.by_koy.forgery.Forgery;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
