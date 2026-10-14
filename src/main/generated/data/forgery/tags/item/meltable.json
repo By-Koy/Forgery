@@ -1,0 +1,13 @@
+{
+  "replace": true,
+  "values": [
+    "minecraft:iron_ingot",
+    "minecraft:raw_iron",
+    "minecraft:iron_block",
+    "minecraft:gold_ingot",
+    "minecraft:raw_gold",
+    "minecraft:gold_block",
+    "forgery:palladium_ingot",
+    "forgery:raw_palladium"
+  ]
+}
