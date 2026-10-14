@@ -14,6 +14,7 @@ public class ForgeryDataGenerator implements DataGeneratorEntrypoint {
 
 		pack.addProvider(ForgeryWorldGen::new);
 		pack.addProvider(ForgeryTags.ForgeryItemTags::new);
+		pack.addProvider(ForgeryTags.ForgeryFluidTags::new);
 	}
 
 	@Override
