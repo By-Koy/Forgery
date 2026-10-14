@@ -1,5 +1,7 @@
 package io.github.by_koy.forgery;
 
+import io.github.by_koy.forgery.datagen.ForgeryPlacedFeatures;
+import io.github.by_koy.forgery.extras.ForgerySoundEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -25,6 +27,7 @@ public class Forgery implements ModInitializer {
 
 		ForgeryItems.initialize();
 		ForgeryBlocks.initialize();
+		ForgerySoundEvents.initialize();
 
 		BiomeModifications.addFeature(
 				BiomeSelectors.foundInOverworld(),

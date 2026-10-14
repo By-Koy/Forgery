@@ -1,5 +1,7 @@
 package io.github.by_koy.forgery;
 
+import io.github.by_koy.forgery.extras.ImplementedContainer;
+import io.github.by_koy.forgery.menus.MelterMenu;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
