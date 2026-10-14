@@ -26,7 +26,7 @@ import org.jspecify.annotations.NonNull;
 public class ForgeryBlockEntities {
 
     public static final BlockEntityType<Melter> MELTER_BLOCK_ENTITY =
-            register("melter", Melter::new, ForgeryBlocks.MELTER);
+            register("melter", Melter::new, ForgeryBlocks.MELTER.block);
 
     @NonNull
     private static <T extends BlockEntity> BlockEntityType<T> register(

@@ -35,7 +35,7 @@ public class ForgeryClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 
-        new ForgeryBlockEntities.Melter(BlockPos.ZERO, ForgeryBlocks.MELTER.defaultBlockState());
+        new ForgeryBlockEntities.Melter(BlockPos.ZERO, ForgeryBlocks.MELTER.block.defaultBlockState());
         MenuScreens.register(ForgeryMenuTypes.MELTER, (MenuScreens.ScreenConstructor<MelterMenu, MelterScreen>) MelterScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
