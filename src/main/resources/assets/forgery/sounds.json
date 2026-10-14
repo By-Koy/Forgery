@@ -1,0 +1,6 @@
+{
+  "fluid.melted.bubble": {
+    "subtitle": "sound.forgery.melted_fluid_bubble",
+    "sounds": ["forgery:melted_fluid_bubble"]
+  }
+}
