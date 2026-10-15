@@ -36,6 +36,7 @@ public class ForgeryBlocks {
             .register((creativeTab) -> creativeTab.accept(ForgeryBlocks.DEEPSLATE_PALLADIUM_ORE.blockItem.asItem()));
     }
 
+    // Create block structs
     public static class ModBlockItems {
         public Block block;
         public BlockItem blockItem;
@@ -74,7 +75,7 @@ public class ForgeryBlocks {
 	public static final ModBlockItems PALLADIUM_ORE = create("palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.5F));
     public static final ModBlockItems DEEPSLATE_PALLADIUM_ORE = create("deepslate_palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.7F));
     public static final ModBlockItems MELTER = create("melter", MelterBlock::new, BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.4F));
-    public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new LiquidBlock(MELTED_STILL.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER));
+    public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new MeltedFluidEntity(MELTED_STILL.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER));
 
 
     // Method to attach the blocks to the game
@@ -149,6 +150,23 @@ public class ForgeryBlocks {
                 player.openMenu(melter);
             }
 
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    public static class MeltedFluidEntity extends LiquidBlock implements EntityBlock {
+
+        public MeltedFluidEntity(FlowingFluid fluid, Properties properties) {
+            super(fluid, properties);
+        }
+
+        @Override @Nullable
+        public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
+            return new ForgeryBlockEntities.MeltedFluid(worldPosition, blockState);
+        }
+
+        @Override @NonNull
+        protected InteractionResult useWithoutItem(@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
             return InteractionResult.SUCCESS;
         }
     }

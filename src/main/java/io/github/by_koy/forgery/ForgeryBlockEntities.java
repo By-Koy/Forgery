@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -27,6 +28,9 @@ public class ForgeryBlockEntities {
 
     public static final BlockEntityType<Melter> MELTER_BLOCK_ENTITY =
             register("melter", Melter::new, ForgeryBlocks.MELTER.block);
+
+    public static final BlockEntityType<MeltedFluid> MELTED_FLUID_ENTITY =
+            register("melted_fluid", MeltedFluid::new, ForgeryBlocks.MELTED_FLUID.block);
 
     @NonNull
     private static <T extends BlockEntity> BlockEntityType<T> register(
@@ -69,6 +73,36 @@ public class ForgeryBlockEntities {
         @Override
         public NonNullList<ItemStack> getItems() {
             return this.items;
+        }
+
+        @Override
+        protected void loadAdditional(@NonNull ValueInput input) {
+            super.loadAdditional(input);
+            ContainerHelper.loadAllItems(input, this.items);
+        }
+
+        @Override
+        protected void saveAdditional(@NonNull ValueOutput output) {
+            ContainerHelper.saveAllItems(output, this.items);
+            super.saveAdditional(output);
+        }
+    }
+
+    public static class MeltedFluid extends BlockEntity {
+        private final NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+        private int colour;
+
+        public MeltedFluid(BlockPos pos, BlockState state) {
+            super(ForgeryBlockEntities.MELTED_FLUID_ENTITY, pos, state);
+            colour = ARGB.opaque(0x000000);
+        }
+
+        public void addColour(int newColour) {
+            colour = ARGB.addRgb(colour, newColour);
+        }
+
+        public int getColour() {
+            return colour;
         }
 
         @Override
