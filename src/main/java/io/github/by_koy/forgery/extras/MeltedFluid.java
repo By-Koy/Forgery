@@ -40,7 +40,7 @@ public abstract class MeltedFluid extends FlowingFluid {
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
                         pos.getZ() + 0.5,
-                        ForgerySoundEvents.MELTED_FLUID_BUBBLE, // Bubbling poison/swamp sound
+                        ForgerySoundEvents.MELTED_FLUID_BUBBLE,
                         SoundSource.AMBIENT,
                         random.nextFloat() * 0.25F + 0.75F,
                         random.nextFloat() + 0.5F,

@@ -21,8 +21,8 @@
 		"client": [
 			"io.github.by_koy.forgery.client.ForgeryClient"
 		],
-		"fabric-datagen": [ 
-      		"io.github.by_koy.forgery.client.ForgeryDataGenerator"
+		"fabric-datagen": [
+          "io.github.by_koy.forgery.client.datagen.ForgeryDataGenerator"
     	] 
 	},
 	"mixins": [

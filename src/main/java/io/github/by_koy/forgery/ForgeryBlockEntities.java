@@ -1,6 +1,7 @@
 package io.github.by_koy.forgery;
 
 import io.github.by_koy.forgery.extras.ImplementedContainer;
+import io.github.by_koy.forgery.extras.MeltedColours;
 import io.github.by_koy.forgery.menus.MelterMenu;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.BlockPos;
@@ -23,14 +24,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ForgeryBlockEntities {
 
     public static final BlockEntityType<Melter> MELTER_BLOCK_ENTITY =
             register("melter", Melter::new, ForgeryBlocks.MELTER.block);
 
-    public static final BlockEntityType<MeltedFluid> MELTED_FLUID_ENTITY =
-            register("melted_fluid", MeltedFluid::new, ForgeryBlocks.MELTED_FLUID.block);
+    public static final BlockEntityType<MeltedFluidEntity> MELTED_FLUID_ENTITY =
+            register("melted_fluid", MeltedFluidEntity::new, ForgeryBlocks.MELTED_FLUID.block);
 
     @NonNull
     private static <T extends BlockEntity> BlockEntityType<T> register(
@@ -88,33 +90,53 @@ public class ForgeryBlockEntities {
         }
     }
 
-    public static class MeltedFluid extends BlockEntity {
-        private final NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+    public static class MeltedFluidEntity extends BlockEntity {
+        private final NonNullList<ItemStack> items;
         private int colour;
 
-        public MeltedFluid(BlockPos pos, BlockState state) {
-            super(ForgeryBlockEntities.MELTED_FLUID_ENTITY, pos, state);
-            colour = ARGB.opaque(0x000000);
+        public MeltedFluidEntity(BlockPos pos, BlockState state) {
+            this(pos, state, NonNullList.of(ItemStack.EMPTY));
         }
 
-        public void addColour(int newColour) {
-            colour = ARGB.addRgb(colour, newColour);
+        private MeltedFluidEntity(BlockPos pos, BlockState state, NonNullList<ItemStack> items) {
+            super(ForgeryBlockEntities.MELTED_FLUID_ENTITY, pos, state);
+            this.items = items;
+            this.colour = 0xff000000;
+            getColourFromList(items);
+        }
+
+        private void addColour(int newColour) {
+            this.colour = ARGB.addRgb(colour, newColour);
         }
 
         public int getColour() {
             return colour;
         }
 
+        public void getColourFromList(NonNullList<ItemStack> list) {
+            for (ItemStack item: list) {
+                this.addColour(MeltedColours.getColour(item.getItem()));
+            }
+        }
+
         @Override
         protected void loadAdditional(@NonNull ValueInput input) {
             super.loadAdditional(input);
             ContainerHelper.loadAllItems(input, this.items);
+            this.colour = 0xff000000;
+            getColourFromList(items);
         }
 
         @Override
         protected void saveAdditional(@NonNull ValueOutput output) {
             ContainerHelper.saveAllItems(output, this.items);
             super.saveAdditional(output);
+        }
+
+        @Override
+        public @Nullable Object getRenderData() {
+            // this is the method from `RenderDataBlockEntity` class.
+            return this.colour;
         }
     }
 

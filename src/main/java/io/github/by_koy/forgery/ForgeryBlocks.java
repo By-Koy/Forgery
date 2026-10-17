@@ -162,7 +162,7 @@ public class ForgeryBlocks {
 
         @Override @Nullable
         public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
-            return new ForgeryBlockEntities.MeltedFluid(worldPosition, blockState);
+            return new ForgeryBlockEntities.MeltedFluidEntity(worldPosition, blockState);
         }
 
         @Override @NonNull

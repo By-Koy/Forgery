@@ -1,4 +1,4 @@
-package io.github.by_koy.forgery.client;
+package io.github.by_koy.forgery.client.block_entities;
 
 import io.github.by_koy.forgery.Forgery;
 import io.github.by_koy.forgery.menus.MelterMenu;
