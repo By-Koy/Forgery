@@ -5,6 +5,7 @@ import io.github.by_koy.forgery.extras.MeltedColours;
 import io.github.by_koy.forgery.menus.MelterMenu;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -77,6 +78,10 @@ public class ForgeryBlockEntities {
             return this.items;
         }
 
+        public void createMeltedFluid() {
+            new MeltedFluidEntity(this.worldPosition.relative(Direction.UP, 1), ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.items);
+        }
+
         @Override
         protected void loadAdditional(@NonNull ValueInput input) {
             super.loadAdditional(input);
@@ -91,17 +96,15 @@ public class ForgeryBlockEntities {
     }
 
     public static class MeltedFluidEntity extends BlockEntity {
-        private final NonNullList<ItemStack> items;
         private int colour;
 
         public MeltedFluidEntity(BlockPos pos, BlockState state) {
             this(pos, state, NonNullList.of(ItemStack.EMPTY));
         }
 
-        private MeltedFluidEntity(BlockPos pos, BlockState state, NonNullList<ItemStack> items) {
+        public MeltedFluidEntity(BlockPos pos, BlockState state, NonNullList<ItemStack> items) {
             super(ForgeryBlockEntities.MELTED_FLUID_ENTITY, pos, state);
-            this.items = items;
-            this.colour = 0xff000000;
+            this.colour = 0x00000000;
             getColourFromList(items);
         }
 
@@ -122,20 +125,19 @@ public class ForgeryBlockEntities {
         @Override
         protected void loadAdditional(@NonNull ValueInput input) {
             super.loadAdditional(input);
-            ContainerHelper.loadAllItems(input, this.items);
-            this.colour = 0xff000000;
-            getColourFromList(items);
+            this.colour = input.getIntOr("colour" ,0x00000000);
         }
 
         @Override
         protected void saveAdditional(@NonNull ValueOutput output) {
-            ContainerHelper.saveAllItems(output, this.items);
+            output.putInt("colour", this.colour);
+
             super.saveAdditional(output);
         }
 
         @Override
         public @Nullable Object getRenderData() {
-            // this is the method from `RenderDataBlockEntity` class.
+            // Send the colour for tinting on the client
             return this.colour;
         }
     }

@@ -1,5 +1,6 @@
 package io.github.by_koy.forgery.menus;
 
+import io.github.by_koy.forgery.ForgeryBlockEntities.Melter;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
@@ -15,19 +16,29 @@ public class MelterMenu extends AbstractContainerMenu {
     private static final int USE_ROW_START = 28;
     private static final int USE_ROW_END = 37;
 
-    private final Container melter;
+    private Container container;
+    private Melter melter;
     private final Slot meltSlot;
 
-    // Client-side constructor
+    // Client-side constructors
     public MelterMenu(int containerId, Container inventory) {
         this(containerId, inventory, new SimpleContainer(1));
     }
 
-
     public MelterMenu(int containerId, Container inventory, Container container) {
         super(ForgeryMenuTypes.MELTER, containerId);
 
-        this.melter = container;
+        this.container = container;
+        meltSlot = new Slot(this.container, MELT_SLOT, 80, 35);
+        this.addSlot(meltSlot);
+        this.addStandardInventorySlots(inventory, 8, 84);
+    }
+
+    // Useful constructor
+    public MelterMenu(int containerId, Container inventory, Melter melter) {
+        super(ForgeryMenuTypes.MELTER, containerId);
+
+        this.melter = melter;
         meltSlot = new Slot(this.melter, MELT_SLOT, 80, 35);
         this.addSlot(meltSlot);
         this.addStandardInventorySlots(inventory, 8, 84);
@@ -41,7 +52,7 @@ public class MelterMenu extends AbstractContainerMenu {
         if (slot.hasItem()) {
             clicked = slot.getItem();
             if (slot.index != 0) {
-                if (this.melter.canPlaceItem(0, clicked)) {
+                if (this.container.canPlaceItem(0, clicked)) {
                     if (!meltSlot.hasItem()) {
                         this.moveItemStackTo(clicked, MELT_SLOT, INV_SLOT_START, false);
                     }
@@ -61,7 +72,11 @@ public class MelterMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NonNull Player player) {
-        return this.melter.stillValid(player);
+        return this.container.stillValid(player);
+    }
+
+    public void createFluid() {
+        melter.createMeltedFluid();
     }
 }
 
