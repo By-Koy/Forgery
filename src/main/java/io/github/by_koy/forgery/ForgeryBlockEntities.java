@@ -46,21 +46,10 @@ public class ForgeryBlockEntities {
     }
 
     public static class Melter extends BlockEntity implements ImplementedContainer, MenuProvider {
-        private final NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+        private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
 
         public Melter(BlockPos pos, BlockState state) {
             super(ForgeryBlockEntities.MELTER_BLOCK_ENTITY, pos, state);
-        }
-
-        private int ticks = 0;
-
-        public int getTicks() {
-            return this.ticks;
-        }
-
-        public void incrementTicks() {
-            this.ticks++;
-            this.setChanged();
         }
 
         @Override @NonNull

@@ -8,29 +8,33 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
+import java.util.ArrayList;
+
+import java.util.List;
 
 public class MelterMenu extends AbstractContainerMenu {
-    private final static int MELT_SLOT = 0;
-    private static final int INV_SLOT_START = 1;
-    private static final int INV_SLOT_END = 28;
-    private static final int USE_ROW_START = 28;
-    private static final int USE_ROW_END = 37;
+    private final static int MELT_SLOTS_START = 0;
+    private final static int MELT_SLOTS_END = 3;
+    private static final int INV_SLOT_START = 4;
+    private static final int INV_SLOT_END = 31;
+    private static final int USE_ROW_START = 31;
+    private static final int USE_ROW_END = 40;
+    private static final int SLOT_SPACING = 25;
 
     private Container container;
     private Melter melter;
-    private final Slot meltSlot;
+    private final List<Slot> meltSlots;
 
     // Client-side constructors
     public MelterMenu(int containerId, Container inventory) {
-        this(containerId, inventory, new SimpleContainer(1));
+        this(containerId, inventory, new SimpleContainer(3));
     }
 
     public MelterMenu(int containerId, Container inventory, Container container) {
         super(ForgeryMenuTypes.MELTER, containerId);
 
         this.container = container;
-        meltSlot = new Slot(this.container, MELT_SLOT, 80, 35);
-        this.addSlot(meltSlot);
+        this.meltSlots = createSlots(container);
         this.addStandardInventorySlots(inventory, 8, 84);
     }
 
@@ -39,9 +43,20 @@ public class MelterMenu extends AbstractContainerMenu {
         super(ForgeryMenuTypes.MELTER, containerId);
 
         this.melter = melter;
-        meltSlot = new Slot(this.melter, MELT_SLOT, 80, 35);
-        this.addSlot(meltSlot);
+        this.meltSlots = createSlots(melter);
         this.addStandardInventorySlots(inventory, 8, 84);
+    }
+
+    private List<Slot> createSlots(Container container) {
+        List<Slot> Slots = new ArrayList<>();
+        for (int i = MELT_SLOTS_START; i < MELT_SLOTS_END; i++) {
+            Slot slot = new Slot(container, i, 37 + i * (SLOT_SIZE + SLOT_SPACING), 35);
+
+            this.addSlot(slot);
+            Slots.add(slot);
+        }
+
+        return Slots;
     }
 
     @Override @NullMarked
@@ -53,8 +68,8 @@ public class MelterMenu extends AbstractContainerMenu {
             clicked = slot.getItem();
             if (slot.index != 0) {
                 if (this.container.canPlaceItem(0, clicked)) {
-                    if (!meltSlot.hasItem()) {
-                        this.moveItemStackTo(clicked, MELT_SLOT, INV_SLOT_START, false);
+                    if (!meltSlots.get(0).hasItem()) {
+                        this.moveItemStackTo(clicked, MELT_SLOTS_START, INV_SLOT_START, false);
                     }
                 }
             } else {
@@ -72,7 +87,12 @@ public class MelterMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NonNull Player player) {
-        return this.container.stillValid(player);
+        if (this.container == null) {
+            return this.melter.stillValid(player);
+
+        } else {
+            return this.container.stillValid(player);
+        }
     }
 
     public void createFluid() {
