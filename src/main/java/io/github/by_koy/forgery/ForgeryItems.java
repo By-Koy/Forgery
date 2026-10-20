@@ -14,6 +14,9 @@ public class ForgeryItems {
     public static void initialize() {
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
 		.register((creativeTab) -> creativeTab.accept(ForgeryItems.PALLADIUM_INGOT.item));
+
+        Forgery.LOGGER.info("Initialized items!");
+
     }
 
     public static class ModItems {

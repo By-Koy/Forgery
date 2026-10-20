@@ -37,6 +37,8 @@ public class ForgeryBlocks {
 
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
             .register((creativeTab) -> creativeTab.accept(ForgeryBlocks.DEEPSLATE_PALLADIUM_ORE.blockItem.asItem()));
+
+        Forgery.LOGGER.info("Initialized blocks!");
     }
 
     // Create block structs
