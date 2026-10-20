@@ -18,8 +18,11 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BeaconBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -47,6 +50,7 @@ public class ForgeryBlockEntities {
 
     public static class Melter extends BlockEntity implements ImplementedContainer, MenuProvider {
         private final NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
+        private int tick = 0;
 
         public Melter(BlockPos pos, BlockState state) {
             super(ForgeryBlockEntities.MELTER_BLOCK_ENTITY, pos, state);
@@ -62,13 +66,31 @@ public class ForgeryBlockEntities {
             return new MelterMenu(containerId, inventory, this);
         }
 
+        public static void tick(final Level level, final BlockPos pos, final BlockState selfState, final Melter entity) {
+            if (entity.getItems() != null) {
+                if (entity.tick >= 120) {
+                    entity.createMeltedFluid(level);
+                    entity.clearItems();
+                } else {
+                    entity.tick++;
+                }
+            } else {
+                entity.tick = 0;
+            }
+        }
+
         @Override
         public NonNullList<ItemStack> getItems() {
             return this.items;
         }
 
-        public void createMeltedFluid() {
-            new MeltedFluidEntity(this.worldPosition.relative(Direction.UP, 1), ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.items);
+        public void clearItems() {
+            this.items.clear();
+        }
+
+        public void createMeltedFluid(Level level) {
+            MeltedFluidEntity meltedFluid = new MeltedFluidEntity(this.worldPosition.relative(Direction.UP, 1), ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.items);
+            level.setBlock(this.worldPosition.relative(Direction.UP, 1), meltedFluid.getBlockState(), 0);
         }
 
         @Override

@@ -3,6 +3,7 @@ package io.github.by_koy.forgery;
 import java.util.function.Function;
 
 import io.github.by_koy.forgery.extras.MeltedFluid;
+import io.github.by_koy.forgery.ForgeryBlockEntities.Melter;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -18,7 +19,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
@@ -26,6 +27,8 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import static io.github.by_koy.forgery.ForgeryBlockEntities.MELTER_BLOCK_ENTITY;
 
 public class ForgeryBlocks {
     public static void initialize() {
@@ -133,7 +136,7 @@ public class ForgeryBlocks {
     }
 
     // Block entity classes
-    public static class MelterBlock extends Block implements EntityBlock {
+    public static class MelterBlock extends BaseEntityBlock {
 
         public MelterBlock(Properties properties) {
             super(properties);
@@ -141,12 +144,17 @@ public class ForgeryBlocks {
 
         @Override @Nullable
         public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
-            return new ForgeryBlockEntities.Melter(worldPosition, blockState);
+            return new Melter(worldPosition, blockState);
+        }
+
+        @Override @Nullable
+        public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final @NonNull Level level, final @NonNull BlockState blockState, final @NonNull BlockEntityType<T> type) {
+            return createTickerHelper(type, MELTER_BLOCK_ENTITY, Melter::tick);
         }
 
         @Override @NonNull
         protected InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
-            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof ForgeryBlockEntities.Melter melter) {
+            if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Melter melter) {
                 player.openMenu(melter);
             }
 
