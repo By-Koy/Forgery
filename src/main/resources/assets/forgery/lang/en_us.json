@@ -1,4 +1,6 @@
 {
+    "tag.item.forgery.meltable": "Meltable",
+    "tag.fluid.forgery.melted_fluid": "Melted Fluid",
     "item.forgery.palladium_ingot": "Palladium Ingot",
     "item.forgery.raw_palladium": "Raw Palladium",
     "block.forgery.palladium_ore": "Palladium Ore",

@@ -13,17 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MelterMenu extends AbstractContainerMenu {
-    private final static int MELT_SLOTS_START = 0;
-    private final static int MELT_SLOTS_END = 2;
+    public final static int MELT_SLOTS_START = 0;
+    public final static int MELT_SLOTS_END = 2;
     private final static int INV_SLOT_START = 3;
     private final static int INV_SLOT_END = 30;
     private final static int USE_ROW_START = 30;
     private final static int USE_ROW_END = 39;
     private final static int SLOT_SPACING = 25;
 
-    private final Container container;
-    private Melter melter;
-    private final List<Slot> meltSlots;
+    public final Container container;
+    public Melter melter;
+    public final List<Slot> meltSlots;
 
     // Client-side constructors
     public MelterMenu(int containerId, Container inventory) {
@@ -60,7 +60,8 @@ public class MelterMenu extends AbstractContainerMenu {
         return Slots;
     }
 
-    @Override @NullMarked
+    @Override
+    @NullMarked
     public ItemStack quickMoveStack(Player player, int slotIndex) {
         ItemStack clicked = ItemStack.EMPTY;
         Slot slot = this.slots.get(slotIndex);
@@ -72,6 +73,7 @@ public class MelterMenu extends AbstractContainerMenu {
                     if (this.container.canPlaceItem(meltSlot.index, clicked)) {
                         if (!meltSlot.hasItem()) {
                             this.moveItemStackTo(clicked, meltSlot.index, INV_SLOT_START, false);
+                            this.container.setItem(meltSlot.index, clicked);
                         }
                     }
                 }
@@ -98,4 +100,3 @@ public class MelterMenu extends AbstractContainerMenu {
         }
     }
 }
-

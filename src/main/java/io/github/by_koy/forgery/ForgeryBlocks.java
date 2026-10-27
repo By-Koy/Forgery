@@ -6,6 +6,7 @@ import io.github.by_koy.forgery.extras.MeltedFluid;
 import io.github.by_koy.forgery.ForgeryBlockEntities.Melter;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
@@ -172,7 +174,11 @@ public class ForgeryBlocks {
 
         @Override @Nullable
         public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
-            return new ForgeryBlockEntities.MeltedFluidEntity(worldPosition, blockState);
+            return newBlockEntity(worldPosition, blockState, NonNullList.of(ItemStack.EMPTY));
+        }
+
+        public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState, NonNullList<ItemStack> items) {
+            return new ForgeryBlockEntities.MeltedFluidEntity(worldPosition, blockState, items);
         }
 
         @Override @NonNull
