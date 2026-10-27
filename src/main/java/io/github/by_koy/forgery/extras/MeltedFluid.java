@@ -137,7 +137,7 @@ public abstract class MeltedFluid extends FlowingFluid {
         }
 
         @Override
-        public int getAmount(FluidState state) {
+        public int getAmount(@NonNull FluidState state) {
             return 8;
         }
     }

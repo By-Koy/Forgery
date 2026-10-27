@@ -2,6 +2,7 @@ package io.github.by_koy.forgery.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.by_koy.forgery.*;
+import io.github.by_koy.forgery.client.block_entities.FluidRenderer;
 import io.github.by_koy.forgery.client.block_entities.MelterScreen;
 import io.github.by_koy.forgery.menus.ForgeryMenuTypes;
 import io.github.by_koy.forgery.menus.MelterMenu;
@@ -50,45 +51,7 @@ public class ForgeryClient implements ClientModInitializer {
         new ForgeryBlockEntities.Melter(BlockPos.ZERO, ForgeryBlocks.MELTER.block.defaultBlockState());
         MenuScreens.register(ForgeryMenuTypes.MELTER, (MenuScreens.ScreenConstructor<MelterMenu, MelterScreen>) MelterScreen::new);
 
-        FluidRenderingRegistry.register(
-                ForgeryBlocks.MELTED_STILL.fluid,
-                ForgeryBlocks.MELTED_FLOWING.fluid,
-                new FluidModel.Unbaked(
-                        new Material(Forgery.id("block/melted_fluid")),
-                        new Material(Forgery.id("block/melted_fluid")),
-                        new Material(Forgery.id("block/melted_fluid")),
-                        new BlockTintSource() {
-
-                            @Override
-                            public int color(BlockState state) {
-                                return 0;
-                            }
-
-                            @Override
-                            public int colorInWorld(@NonNull BlockState state, @NonNull BlockAndTintGetter level, @NonNull BlockPos pos) {
-                                Object fluidData = level.getBlockEntityRenderData(pos);
-                                Forgery.LOGGER.info("Fluid colour returned: {}", fluidData);
-
-                                if (fluidData != null) {
-                                    return (int) fluidData;
-                                } else {
-                                    return ARGB.opaque(0x000000);
-                                }
-
-                            }
-
-                            @Override
-                            public int colorAsTerrainParticle(@NonNull BlockState state, @NonNull BlockAndTintGetter level, @NonNull BlockPos pos) {
-                                return BlockTintSource.super.colorAsTerrainParticle(state, level, pos);
-                            }
-
-                            @Override @NonNull
-                            public Set<Property<?>> relevantProperties() {
-                                return BlockTintSource.super.relevantProperties();
-                            }
-                        }
-                )
-        );
+        FluidRenderer.initialize();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (this.sendToChatKey.consumeClick()) {
