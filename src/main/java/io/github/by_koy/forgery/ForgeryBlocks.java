@@ -82,7 +82,7 @@ public class ForgeryBlocks {
 	public static final ModBlockItems PALLADIUM_ORE = create("palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.5F));
     public static final ModBlockItems DEEPSLATE_PALLADIUM_ORE = create("deepslate_palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.7F));
     public static final ModBlockItems MELTER = create("melter", MelterBlock::new, BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.4F));
-    public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new MeltedFluidEntity(MELTED_STILL.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.WATER));
+    public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new MeltedFluidEntity(MELTED_STILL.fluid, MELTED_FLOWING.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA));
 
 
     // Method to attach the blocks to the game
@@ -167,9 +167,16 @@ public class ForgeryBlocks {
     }
 
     public static class MeltedFluidEntity extends LiquidBlock implements EntityBlock {
+        public FlowingFluid flowing;
 
         public MeltedFluidEntity(FlowingFluid fluid, Properties properties) {
             super(fluid, properties);
+        }
+
+        public MeltedFluidEntity(FlowingFluid still, FlowingFluid flowing, Properties properties) {
+            this(still, properties);
+
+            this.flowing = flowing;
         }
 
         @Override @Nullable

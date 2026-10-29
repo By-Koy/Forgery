@@ -111,7 +111,7 @@ public class ForgeryBlockEntities {
 
         public void createMeltedFluid(Level level) {
             BlockPos pos = this.worldPosition.relative(Direction.UP, 1);
-            level.setBlock(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), 0);
+            level.setBlock(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), Block.UPDATE_ALL);
             level.setBlockEntity(new MeltedFluidEntity(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.getItems()));
         }
 
@@ -134,8 +134,6 @@ public class ForgeryBlockEntities {
 
         public MeltedFluidEntity(BlockPos pos, BlockState state) {
             this(pos, state, NonNullList.of(ItemStack.EMPTY));
-            Forgery.LOGGER.info("creation from client");
-
         }
 
         public MeltedFluidEntity(BlockPos pos, BlockState state, NonNullList<ItemStack> items) {
@@ -157,12 +155,8 @@ public class ForgeryBlockEntities {
 
         public void getColourFromList() {
             for (ItemStack item: this.ITEMS) {
-                Forgery.LOGGER.info("item: {}", item);
-                Forgery.LOGGER.info("Adding colour {} to {}...", Integer.toHexString(MeltedColours.getColour(item.getItem())), Integer.toHexString(this.getColour()));
                 this.addColour(MeltedColours.getColour(item.getItem()));
             }
-
-            Forgery.LOGGER.info("Generated colour: {}", this.colour);
         }
 
         @Override
@@ -204,8 +198,7 @@ public class ForgeryBlockEntities {
         @Override @Nullable
         public Object getRenderData() {
             // Send the colour for tinting on the client
-            Forgery.LOGGER.info("Returning: {}", Integer.toHexString(this.getColour()));
-            return this.getColour();
+            return this.getColour() == 0 ? null : this.getColour();
         }
     }
 
