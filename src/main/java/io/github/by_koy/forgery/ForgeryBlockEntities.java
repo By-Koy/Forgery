@@ -74,28 +74,30 @@ public class ForgeryBlockEntities {
         }
 
         public static void tick(final Level level, final BlockPos pos, final BlockState selfState, final Melter entity) {
-            if (entity.tick >= 120) {
-                boolean melt = false;
+            if (!entity.getItems().equals(NonNullList.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY))) {
+                if (entity.tick >= 80) {
+                    boolean melt = false;
 
-                for (int i = 0; i < entity.getContainerSize(); i++) {
+                    for (int i = 0; i < entity.getContainerSize(); i++) {
 
-                    ItemStack stack = entity.getItems().get(i);
+                        ItemStack stack = entity.getItems().get(i);
 
-                    if (entity.canPlaceItem(i, stack)) {
+                        if (entity.canPlaceItem(i, stack)) {
 
-                        entity.createMeltedFluid(level);
-                        entity.decrementItems(i, stack);
-                        melt = true;
+                            entity.createMeltedFluid(level);
+                            entity.decrementItems(i, stack);
+                            melt = true;
+                        }
+
+                        if (melt) {
+                            break;
+                        }
                     }
 
-                    if (melt) {
-                        break;
-                    }
+                    entity.tick = 0;
+                } else {
+                    entity.tick++;
                 }
-
-                entity.tick = 0;
-            } else {
-                entity.tick++;
             }
         }
 
@@ -111,7 +113,7 @@ public class ForgeryBlockEntities {
 
         public void createMeltedFluid(Level level) {
             BlockPos pos = this.worldPosition.relative(Direction.UP, 1);
-            level.setBlock(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), Block.UPDATE_ALL);
+            level.setBlock(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), Block.UPDATE_CLIENTS);
             level.setBlockEntity(new MeltedFluidEntity(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.getItems()));
         }
 
@@ -181,8 +183,6 @@ public class ForgeryBlockEntities {
         protected void saveAdditional(@NonNull ValueOutput output) {
             super.saveAdditional(output);
             output.putInt("colour", this.colour);
-
-            this.setChanged();
         }
 
         @Override @NonNull

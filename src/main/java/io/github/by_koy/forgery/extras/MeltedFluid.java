@@ -88,11 +88,6 @@ public abstract class MeltedFluid extends FlowingFluid {
     }
 
     @Override
-    protected void spread(final @NonNull ServerLevel level, final @NonNull BlockPos pos, final @NonNull BlockState state, final @NonNull FluidState fluidState) {
-
-    }
-
-    @Override
     public boolean canBeReplacedWith(@NonNull FluidState state, @NonNull BlockGetter world, @NonNull BlockPos pos, @NonNull Fluid fluid,
                                      @NonNull Direction direction) {
         return direction == Direction.DOWN && !fluid.isSame(this.getFlowing()) || !fluid.isSame(this.getSource());
