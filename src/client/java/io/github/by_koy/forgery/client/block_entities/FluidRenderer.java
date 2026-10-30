@@ -9,21 +9,20 @@ import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.ARGB;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.FlowingFluid;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Set;
 
+import static io.github.by_koy.forgery.ForgeryBlocks.MeltedFluidBlock.interpretEntityPos;
+
 public class FluidRenderer {
     public static void initialize() {
-
         FluidRenderingRegistry.register(
                 ForgeryBlocks.MELTED_STILL.fluid,
-//                ForgeryBlocks.MELTED_FLOWING.fluid,
+                ForgeryBlocks.MELTED_FLOWING.fluid,
                 new FluidModel.Unbaked(
                         new Material(Forgery.id("block/melted_fluid")),
                         new Material(Forgery.id("block/melted_fluid")),
@@ -37,30 +36,14 @@ public class FluidRenderer {
 
                             @Override
                             public int colorInWorld(@NonNull BlockState state, @NonNull BlockAndTintGetter level, @NonNull BlockPos pos) {
-                                Object fluidData = level.getBlockEntityRenderData(pos);
+                                BlockPos entityPos = interpretEntityPos(
+                                        state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosX),
+                                        state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosY),
+                                        state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosZ),
+                                        pos);
 
-                                if (fluidData != null) {
-                                    return (int) fluidData;
-                                } else {
-
-                                   FluidState checkFluid = state.getFluidState();
-                                   BlockPos otherPos = pos;
-                                   Vec3 flow = checkFluid.getFlow(level, pos);
-
-                                    while (!checkFluid.isSource()) {
-                                       otherPos = new BlockPos((int) (pos.getX() - flow.x), (int) (pos.getY() - flow.y), (int) (pos.getZ() - flow.z));
-                                       checkFluid = level.getFluidState(otherPos);
-                                       flow = checkFluid.getFlow(level, otherPos);
-                                    }
-
-                                    fluidData = level.getBlockEntityRenderData(otherPos);
-                                    if (fluidData != null) {
-                                        return (int) fluidData;
-                                    }
-
-                                    return ARGB.opaque(0x000000);
-                                }
-
+                                Object fluidData = level.getBlockEntityRenderData(entityPos);
+                                return fluidData != null ? ARGB.opaque((int) fluidData) : 0;
                             }
 
                             @Override

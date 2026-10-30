@@ -1,5 +1,6 @@
 package io.github.by_koy.forgery;
 
+import static io.github.by_koy.forgery.ForgeryBlocks.MelterBlock.melterActive.*;
 import io.github.by_koy.forgery.datagen.ForgeryTags;
 import io.github.by_koy.forgery.extras.ImplementedContainer;
 import io.github.by_koy.forgery.extras.MeltedColours;
@@ -22,6 +23,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -74,29 +76,39 @@ public class ForgeryBlockEntities {
         }
 
         public static void tick(final Level level, final BlockPos pos, final BlockState selfState, final Melter entity) {
-            if (!entity.getItems().equals(NonNullList.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY))) {
-                if (entity.tick >= 80) {
-                    boolean melt = false;
+            if (level.getBlockState(pos.relative(Direction.DOWN)).is(Blocks.CAMPFIRE)) {
+                level.setBlockAndUpdate(pos, selfState.setValue(ForgeryBlocks.MelterBlock.ACTIVE, on));
+            } else if (level.getBlockState(pos.relative(Direction.DOWN)).is(Blocks.SOUL_CAMPFIRE)) {
+                level.setBlockAndUpdate(pos, selfState.setValue(ForgeryBlocks.MelterBlock.ACTIVE, soul));
+            } else {
+                level.setBlockAndUpdate(pos, selfState.setValue(ForgeryBlocks.MelterBlock.ACTIVE, off));
+            }
 
-                    for (int i = 0; i < entity.getContainerSize(); i++) {
+            if (selfState.getValue(ForgeryBlocks.MelterBlock.ACTIVE) != off) {
+                if (!entity.getItems().equals(NonNullList.of(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY))) {
+                    if (entity.tick >= 80) {
+                        boolean melt = false;
 
-                        ItemStack stack = entity.getItems().get(i);
+                        for (int i = 0; i < entity.getContainerSize(); i++) {
 
-                        if (entity.canPlaceItem(i, stack)) {
+                            ItemStack stack = entity.getItems().get(i);
 
-                            entity.createMeltedFluid(level);
-                            entity.decrementItems(i, stack);
-                            melt = true;
+                            if (entity.canPlaceItem(i, stack)) {
+
+                                entity.createMeltedFluid(level);
+                                entity.decrementItems(i, stack);
+                                melt = true;
+                            }
+
+                            if (melt) {
+                                break;
+                            }
                         }
 
-                        if (melt) {
-                            break;
-                        }
+                        entity.tick = 0;
+                    } else {
+                        entity.tick++;
                     }
-
-                    entity.tick = 0;
-                } else {
-                    entity.tick++;
                 }
             }
         }
@@ -112,7 +124,7 @@ public class ForgeryBlockEntities {
         }
 
         public void createMeltedFluid(Level level) {
-            BlockPos pos = this.worldPosition.relative(Direction.UP, 1);
+            BlockPos pos = this.worldPosition.relative(this.getBlockState().getValue(ForgeryBlocks.MelterBlock.FACING), 1);
             level.setBlock(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), Block.UPDATE_CLIENTS);
             level.setBlockEntity(new MeltedFluidEntity(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.getItems()));
         }

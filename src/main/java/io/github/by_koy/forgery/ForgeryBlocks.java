@@ -6,6 +6,7 @@ import io.github.by_koy.forgery.extras.MeltedFluid;
 import io.github.by_koy.forgery.ForgeryBlockEntities.Melter;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,17 +14,23 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.references.BlockItemId;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.phys.BlockHitResult;
@@ -82,7 +89,7 @@ public class ForgeryBlocks {
 	public static final ModBlockItems PALLADIUM_ORE = create("palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.5F));
     public static final ModBlockItems DEEPSLATE_PALLADIUM_ORE = create("deepslate_palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.7F));
     public static final ModBlockItems MELTER = create("melter", MelterBlock::new, BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.4F));
-    public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new MeltedFluidEntity(MELTED_STILL.fluid, MELTED_FLOWING.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA));
+    public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new MeltedFluidBlock(MELTED_STILL.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA));
 
 
     // Method to attach the blocks to the game
@@ -141,14 +148,41 @@ public class ForgeryBlocks {
 
     // Block entity classes
     public static class MelterBlock extends BaseEntityBlock {
+        public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+        public enum  melterActive implements StringRepresentable {
+            off,
+            soul,
+            on;
+
+            @Override @NonNull
+            public String getSerializedName() {
+                return this.name();
+            }
+        } public static final EnumProperty<melterActive> ACTIVE = EnumProperty.create("active", melterActive.class);
 
         public MelterBlock(Properties properties) {
             super(properties);
+
+            registerDefaultState(defaultBlockState()
+                    .setValue(FACING, Direction.NORTH)
+                    .setValue(ACTIVE, melterActive.off));
+        }
+
+        @Override
+        public BlockState getStateForPlacement(final BlockPlaceContext context) {
+            return this.defaultBlockState()
+                    .setValue(FACING, context.getHorizontalDirection());
         }
 
         @Override @Nullable
         public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
             return new Melter(worldPosition, blockState);
+        }
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(FACING, ACTIVE);
         }
 
         @Override @Nullable
@@ -166,17 +200,25 @@ public class ForgeryBlocks {
         }
     }
 
-    public static class MeltedFluidEntity extends LiquidBlock implements EntityBlock {
-        public FlowingFluid flowing;
+    public static class MeltedFluidBlock extends LiquidBlock implements EntityBlock {
+        public static final IntegerProperty relPosX = IntegerProperty.create("relative_pos_x", 0, 16);
+        public static final IntegerProperty relPosY = IntegerProperty.create("relative_pos_y", 0, 16);
+        public static final IntegerProperty relPosZ = IntegerProperty.create("relative_pos_z", 0, 16);
 
-        public MeltedFluidEntity(FlowingFluid fluid, Properties properties) {
-            super(fluid, properties);
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.@NonNull Builder<Block, BlockState> builder) {
+            super.createBlockStateDefinition(builder);
+            builder.add(relPosX, relPosY, relPosZ);
         }
 
-        public MeltedFluidEntity(FlowingFluid still, FlowingFluid flowing, Properties properties) {
-            this(still, properties);
+        public MeltedFluidBlock(FlowingFluid fluid, Properties properties) {
+            super(fluid, properties);
 
-            this.flowing = flowing;
+            registerDefaultState(defaultBlockState()
+                    .setValue(relPosX, 0)
+                    .setValue(relPosY, 0)
+                    .setValue(relPosZ, 0));
         }
 
         @Override @Nullable
@@ -191,6 +233,28 @@ public class ForgeryBlocks {
         @Override @NonNull
         protected InteractionResult useWithoutItem(@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
             return InteractionResult.SUCCESS;
+        }
+
+        public static BlockPos interpretEntityPos(int x, int y, int z, BlockPos pos) {
+            int parsedX = x <= 8 ? x : -(x - 8);
+            int parsedY = y <= 8 ? y : -(y - 8);
+            int parsedZ = z <= 8 ? z : -(z - 8);
+
+            int newX = parsedX + pos.getX();
+            int newY = parsedY + pos.getY();
+            int newZ = parsedZ + pos.getZ();
+
+            BlockPos entityPos = new BlockPos(newX, newY, newZ);
+            Forgery.LOGGER.info("Found BlockPos: {} from x: {}, y: {}, z: {}, thisPos: {}", entityPos, x, y, z, pos);
+            return entityPos;
+        }
+
+        public static BlockPos createEntityPos(BlockPos thisPos, BlockPos entityPos) {
+            int newX = thisPos.getX() - entityPos.getX() >= 0 ? thisPos.getX() - entityPos.getX() : -(thisPos.getX() - entityPos.getX()) + 8;
+            int newY = thisPos.getY() - entityPos.getY() >= 0 ? thisPos.getY() - entityPos.getY() : -(thisPos.getY() - entityPos.getY()) + 8;
+            int newZ = thisPos.getZ() - entityPos.getZ() >= 0 ? thisPos.getZ() - entityPos.getZ() : -(thisPos.getZ() - entityPos.getZ()) + 8;
+
+            return new BlockPos(newX, newY, newZ);
         }
     }
 
