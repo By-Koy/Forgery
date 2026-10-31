@@ -8,16 +8,14 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
+import org.jspecify.annotations.NonNull;
 
 public class MelterScreen extends AbstractContainerScreen<MelterMenu> {
     private static final Identifier MENU_SPRITE = Forgery.id("textures/gui/container/melter_off.png");
     private static final Identifier ON_SPRITE = Forgery.id("textures/gui/container/melter_on.png");
     private static final Identifier SOUL_SPRITE = Forgery.id("textures/gui/container/melter_soul.png");
-    private static final int MELT_TIME = 100;
 
     private final MelterMenu melter;
-    private final Inventory playerInv;
-    private final Component title;
     private final int imageWidth;
     private final int imageHeight;
 
@@ -29,15 +27,19 @@ public class MelterScreen extends AbstractContainerScreen<MelterMenu> {
         super(menu, inventory, title, imageWidth, imageHeight);
 
         this.melter = menu;
-        this.playerInv = inventory;
-        this.title = title;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+    public void extractBackground(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
         super.extractBackground(graphics, mouseX, mouseY, delta);
-        graphics.blit(RenderPipelines.GUI_TEXTURED, MENU_SPRITE, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
+        Identifier sprite = switch (melter.getActive()) {
+                                case off -> MENU_SPRITE;
+                                case on -> ON_SPRITE;
+                                case soul -> SOUL_SPRITE;
+                            };
+
+        graphics.blit(RenderPipelines.GUI_TEXTURED, sprite, this.leftPos, this.topPos, 0.0F, 0.0F, this.imageWidth, this.imageHeight, BACKGROUND_TEXTURE_WIDTH, BACKGROUND_TEXTURE_HEIGHT);
     }
 }

@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.FlowingFluid;
@@ -37,7 +38,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-import static io.github.by_koy.forgery.ForgeryBlockEntities.MELTER_BLOCK_ENTITY;
+import static io.github.by_koy.forgery.ForgeryBlockEntities.*;
 
 public class ForgeryBlocks {
     public static void initialize() {
@@ -90,7 +91,10 @@ public class ForgeryBlocks {
     // Create blocks
 	public static final ModBlockItems PALLADIUM_ORE = create("palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.5F));
     public static final ModBlockItems DEEPSLATE_PALLADIUM_ORE = create("deepslate_palladium_ore", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.7F));
+    public static final ModBlockItems METAL_BLOCK = create("metal_block", BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.5F));
     public static final ModBlockItems MELTER = create("melter", MelterBlock::new, BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.4F));
+    public static final ModBlockItems NOZZLE = create("nozzle", NozzleBlock::new, BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.4F));
+    public static final ModBlockItems CAST = create("cast", CastBlock::new, BlockBehaviour.Properties.of().sound(SoundType.STONE).requiresCorrectToolForDrops().destroyTime(0.6F).noOcclusion());
     public static final ModBlocks MELTED_FLUID = createNonItem("melted_fluid", (props) -> new MeltedFluidBlock(MELTED_STILL.fluid, props), BlockBehaviour.Properties.ofFullCopy(Blocks.LAVA));
 
 
@@ -152,7 +156,7 @@ public class ForgeryBlocks {
     public static class MelterBlock extends BaseEntityBlock {
         public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
 
-        public enum  melterActive implements StringRepresentable {
+        public enum melterActive implements StringRepresentable {
             off,
             soul,
             on;
@@ -197,6 +201,72 @@ public class ForgeryBlocks {
             if (!level.isClientSide() && level.getBlockEntity(pos) instanceof Melter melter) {
                 player.openMenu(melter);
             }
+
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    public static class NozzleBlock extends BaseEntityBlock {
+        public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
+
+        public NozzleBlock(Properties properties) {
+            super(properties);
+
+            registerDefaultState(defaultBlockState()
+                    .setValue(FACING, Direction.NORTH));
+        }
+
+        @Override
+        public BlockState getStateForPlacement(final BlockPlaceContext context) {
+            return this.defaultBlockState()
+                    .setValue(FACING, context.getHorizontalDirection());
+        }
+
+        @Override @Nullable
+        public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
+            return new ForgeryBlockEntities.Nozzle(worldPosition, blockState);
+        }
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(FACING);
+        }
+
+        @Override @Nullable
+        public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final @NonNull Level level, final @NonNull BlockState blockState, final @NonNull BlockEntityType<T> type) {
+            return createTickerHelper(type, NOZZLE_ENTITY, ForgeryBlockEntities.Nozzle::tick);
+        }
+
+        @Override @NonNull
+        protected InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
+            return InteractionResult.SUCCESS;
+        }
+    }
+
+    public static class CastBlock extends BaseEntityBlock {
+        public static final BooleanProperty READY = BooleanProperty.create("ready");
+
+        public CastBlock(Properties properties) {
+            super(properties);
+
+            registerDefaultState(defaultBlockState()
+                    .setValue(READY, true));
+        }
+
+        @Override @Nullable
+        public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
+            return new ForgeryBlockEntities.Cast(worldPosition, blockState);
+        }
+
+        @Override
+        protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+            builder.add(READY);
+        }
+
+        @Override @NonNull
+        protected InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
+            Cast entity = (Cast) level.getBlockEntity(pos);
+            player.getInventory().add(entity.getResult());
 
             return InteractionResult.SUCCESS;
         }
@@ -251,9 +321,15 @@ public class ForgeryBlocks {
             int newY = parsedY + pos.getY();
             int newZ = parsedZ + pos.getZ();
 
-            BlockPos entityPos = new BlockPos(newX, newY, newZ);
-            Forgery.LOGGER.info("Found BlockPos: {} from x: {}, y: {}, z: {}, thisPos: {}", entityPos, x, y, z, pos);
-            return entityPos;
+            return new BlockPos(newX, newY, newZ);
+        }
+
+        public static BlockPos interpretEntityPos(BlockState state, BlockPos pos) {
+            return interpretEntityPos(
+                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosX),
+                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosY),
+                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosZ),
+                    pos);
         }
 
         public static BlockPos createEntityPos(BlockPos thisPos, BlockPos entityPos) {

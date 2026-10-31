@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "forgery:block/nozzle"
+    },
+    "facing=east": {
+      "model": "forgery:block/nozzle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "forgery:block/nozzle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "forgery:block/nozzle",
+      "y": 270
+    }
+  }
+}

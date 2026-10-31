@@ -1,6 +1,7 @@
 package io.github.by_koy.forgery;
 
 import io.github.by_koy.forgery.datagen.ForgeryPlacedFeatures;
+import io.github.by_koy.forgery.extras.ForgeryComponents;
 import io.github.by_koy.forgery.extras.ForgerySoundEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -25,6 +26,7 @@ public class Forgery implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		ForgeryComponents.initialize();
 		ForgeryItems.initialize();
 		ForgeryBlocks.initialize();
 		ForgerySoundEvents.initialize();

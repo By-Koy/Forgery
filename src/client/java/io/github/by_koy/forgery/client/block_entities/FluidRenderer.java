@@ -36,11 +36,7 @@ public class FluidRenderer {
 
                             @Override
                             public int colorInWorld(@NonNull BlockState state, @NonNull BlockAndTintGetter level, @NonNull BlockPos pos) {
-                                BlockPos entityPos = interpretEntityPos(
-                                        state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosX),
-                                        state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosY),
-                                        state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosZ),
-                                        pos);
+                                BlockPos entityPos = interpretEntityPos(state, pos);
 
                                 Object fluidData = level.getBlockEntityRenderData(entityPos);
                                 return fluidData != null ? ARGB.opaque((int) fluidData) : 0;

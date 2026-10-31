@@ -57,6 +57,8 @@ public abstract class MeltedFluid extends FlowingFluid {
 
     @Override
     protected void spread(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull BlockState state, @NonNull FluidState fluidState) {
+//        super.spread(level, pos, state, fluidState);
+//
 //        if (state.getBlock() == ForgeryBlocks.MELTED_FLUID.block) {
 //            BlockPos entityPos = ForgeryBlocks.MeltedFluidBlock.interpretEntityPos(
 //                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosX),
@@ -79,11 +81,10 @@ public abstract class MeltedFluid extends FlowingFluid {
 //                            entityPos
 //                    );
 //
-//                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosX, subPos.getX());
-//                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosY, subPos.getY());
-//                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosZ, subPos.getZ());
-//
-//                level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
+//                level.setBlockAndUpdate(pos,
+//                        newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosX, subPos.getX())
+//                                .setValue(ForgeryBlocks.MeltedFluidBlock.relPosY, subPos.getY())
+//                                .setValue(ForgeryBlocks.MeltedFluidBlock.relPosZ, subPos.getZ()));
 //                }
 //            }
 //        }
