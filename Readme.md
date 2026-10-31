@@ -19,13 +19,13 @@ In come the outputs. The nozzle is just a translator between melted fluid and th
 The cast on the other hand, is the heart of the operation - it's used to choose what you want to create. this is done by adding stencils, which are little squares that create the chosen output.
 
 ## The Caveat
-As you may have noticed (by the massive warning or whatever), this mod is in the poc phase and thus most features aren't done. How not done? Here's a list of features: (the checkboxes signify status) \
-- [X] - A working melter \
-- [ ] - fully functional melted fluid \
-- [x] - a (mostly) working nozzle \
-- [ ] - literally any stencil (you can make a block at least :cryin:) \
-- [x] - a single, not complete ore (at least it spawns naturally!) \
-- [x] - a creative mode tab to host all the mod's items. \
+As you may have noticed (by the massive warning or whatever), this mod is in the poc phase and thus most features aren't done. How not done? Here's a list of features: (the checkboxes signify status)
+- [X] A working melter
+- [ ] fully functional melted fluid
+- [x] a (mostly) working nozzle
+- [ ] literally any stencil (you can make a block at least :cryin:)
+- [x] a single, not complete ore (at least it spawns naturally!)
+- [x] a creative mode tab to host all the mod's items.
 
 ## Testing
 Now that we got past the boring part, here's how you start!
