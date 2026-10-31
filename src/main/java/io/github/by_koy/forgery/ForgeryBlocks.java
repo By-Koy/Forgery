@@ -42,12 +42,6 @@ import static io.github.by_koy.forgery.ForgeryBlockEntities.*;
 
 public class ForgeryBlocks {
     public static void initialize() {
-        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-            .register((creativeTab) -> creativeTab.accept(ForgeryBlocks.PALLADIUM_ORE.blockItem.asItem()));
-
-        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-            .register((creativeTab) -> creativeTab.accept(ForgeryBlocks.DEEPSLATE_PALLADIUM_ORE.blockItem.asItem()));
-
         Forgery.LOGGER.info("Initialized blocks!");
     }
 

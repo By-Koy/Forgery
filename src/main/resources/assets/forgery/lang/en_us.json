@@ -8,6 +8,7 @@
     "block.forgery.melter": "Melter",
     "block.forgery.cast": "Cast",
     "block.forgery.nozzle": "Nozzle",
-    "block.forgery.metal_block": "Metal Block"
+    "block.forgery.metal_block": "Metal Block",
+    "creativeTab.forgery": "Forgery"
 
 }

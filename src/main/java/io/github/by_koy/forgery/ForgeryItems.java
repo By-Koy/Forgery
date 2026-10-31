@@ -3,19 +3,22 @@ package io.github.by_koy.forgery;
 import java.util.function.Function;
 
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class ForgeryItems {
     public static void initialize() {
-        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.INGREDIENTS)
-		.register((creativeTab) -> creativeTab.accept(ForgeryItems.PALLADIUM_INGOT.item));
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, FORGERY_CREATIVE_TAB_KEY, FORGERY_CREATIVE_TAB);
 
-        Forgery.LOGGER.info("Initialized items!");
+        Forgery.LOGGER.info("Initialized items and creative menu");
 
     }
 
@@ -54,4 +57,25 @@ public class ForgeryItems {
         Registry.register(BuiltInRegistries.ITEM, itemKey, item);
         return item;
 	}
+
+    // Create the creative mod tab
+    public static final ResourceKey<CreativeModeTab> FORGERY_CREATIVE_TAB_KEY = ResourceKey.create(
+            BuiltInRegistries.CREATIVE_MODE_TAB.key(), Forgery.id("forgery_creative_tab")
+    );
+    public static final CreativeModeTab FORGERY_CREATIVE_TAB = FabricCreativeModeTab.builder()
+            .icon(() -> new ItemStack(PALLADIUM_INGOT.item))
+            .title(Component.translatable("creativeTab.forgery"))
+            .displayItems((params, output) -> {
+                // Add Items
+                output.accept(PALLADIUM_INGOT.item);
+                output.accept(RAW_PALLADIUM.item);
+
+                // Add Blocks
+                output.accept(ForgeryBlocks.DEEPSLATE_PALLADIUM_ORE.block);
+                output.accept(ForgeryBlocks.PALLADIUM_ORE.block);
+                output.accept(ForgeryBlocks.CAST.block);
+                output.accept(ForgeryBlocks.MELTER.block);
+                output.accept(ForgeryBlocks.NOZZLE.block);
+            })
+            .build();
 }
