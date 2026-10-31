@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "forgery:item/metal_block",
+    "tints": [
+      {
+        "type": "forgery:metal_block_tint",
+        "colour": 0
+      }
+    ]
+  }
+}

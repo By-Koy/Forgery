@@ -16,9 +16,9 @@ public class ForgeryComponents {
         Forgery.LOGGER.info("Registering components");
     }
 
-    public static final DataComponentType<List<ItemStack>> COMPOUND = Registry.register(
+    public static final DataComponentType<Integer> COMPOUND = Registry.register(
             BuiltInRegistries.DATA_COMPONENT_TYPE,
             Forgery.id("compound"),
-            DataComponentType.<List<ItemStack>>builder().persistent(ItemStack.CODEC.listOf()).networkSynchronized(ByteBufCodecs.fromCodec(ItemStack.CODEC.listOf())).build()
+            DataComponentType.<Integer>builder().persistent(ExtraCodecs.RGB_COLOR_CODEC).networkSynchronized(ByteBufCodecs.VAR_INT).build()
     );
 }

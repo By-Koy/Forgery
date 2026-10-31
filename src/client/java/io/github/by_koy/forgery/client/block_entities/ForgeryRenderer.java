@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.ARGB;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jspecify.annotations.NonNull;
@@ -18,8 +17,14 @@ import java.util.Set;
 
 import static io.github.by_koy.forgery.ForgeryBlocks.MeltedFluidBlock.interpretEntityPos;
 
-public class FluidRenderer {
+public class ForgeryRenderer {
     public static void initialize() {
+        registerMeltedFluidRenderer();
+
+    Forgery.LOGGER.info("Initialized rendering!");
+    }
+
+    public static void registerMeltedFluidRenderer() {
         FluidRenderingRegistry.register(
                 ForgeryBlocks.MELTED_STILL.fluid,
                 ForgeryBlocks.MELTED_FLOWING.fluid,

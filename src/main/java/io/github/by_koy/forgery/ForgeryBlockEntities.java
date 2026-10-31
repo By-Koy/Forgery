@@ -19,6 +19,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -173,7 +175,7 @@ public class ForgeryBlockEntities {
         public void createMeltedFluid(Level level) {
             BlockPos pos = this.worldPosition.relative(this.getBlockState().getValue(ForgeryBlocks.MelterBlock.FACING), 1);
             level.setBlock(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), Block.UPDATE_CLIENTS);
-            level.setBlockEntity(new MeltedFluidEntity(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), this.getItems()));
+            level.setBlockEntity(new MeltedFluidEntity(pos, ForgeryBlocks.MELTED_FLUID.block.defaultBlockState(), items));
         }
 
         @Override
@@ -189,8 +191,8 @@ public class ForgeryBlockEntities {
         }
     }
 
-    public static class MeltedFluidEntity extends BlockEntity {
-        public NonNullList<ItemStack> items;
+    public static class MeltedFluidEntity extends BlockEntity implements ImplementedContainer {
+        private final NonNullList<ItemStack> items = NonNullList.withSize(3, new ItemStack(ForgeryItems.PALLADIUM_INGOT.item));
         private int colour;
 
         public MeltedFluidEntity(BlockPos pos, BlockState state) {
@@ -200,7 +202,17 @@ public class ForgeryBlockEntities {
         public MeltedFluidEntity(BlockPos pos, BlockState state, NonNullList<ItemStack> items) {
             super(ForgeryBlockEntities.MELTED_FLUID_ENTITY, pos, state);
 
-            this.items = items;
+            if (!items.isEmpty()) {
+                this.addItems(items);
+                this.setChanged();
+            }
+        }
+
+        public void addItems(NonNullList<ItemStack> items) {
+            for (int i = 0; i < items.size(); i++) {
+                this.items.set(i, items.get(i));
+            }
+            Forgery.LOGGER.info("this.items: {}", this.items);
             getColourFromList();
             this.setChanged();
         }
@@ -221,11 +233,22 @@ public class ForgeryBlockEntities {
         }
 
         @Override
+        public NonNullList<ItemStack> getItems() {
+            return items;
+        }
+
+        @Override
         protected void loadAdditional(@NonNull ValueInput input) {
             super.loadAdditional(input);
+            ContainerHelper.loadAllItems(input, items);
             this.colour = input.getIntOr("colour" , ARGB.opaque(0x000000));
+        }
 
-            this.setChanged();
+        @Override
+        protected void saveAdditional(@NonNull ValueOutput output) {
+            ContainerHelper.saveAllItems(output, this.items);
+            output.putInt("colour", this.colour);
+            super.saveAdditional(output);
         }
 
         @Override
@@ -236,12 +259,6 @@ public class ForgeryBlockEntities {
 
             BlockState state = getBlockState();
             level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_ALL);
-        }
-
-        @Override
-        protected void saveAdditional(@NonNull ValueOutput output) {
-            super.saveAdditional(output);
-            output.putInt("colour", this.colour);
         }
 
         @Override @NonNull
@@ -261,64 +278,49 @@ public class ForgeryBlockEntities {
         }
     }
 
-    public static class Nozzle extends BlockEntity implements ImplementedContainer {
-        private NonNullList<ItemStack> items = NonNullList.withSize(3, ItemStack.EMPTY);
-        private int fluidColour;
+    public static class Nozzle extends BlockEntity {
+        private int ticks;
 
         public Nozzle(BlockPos pos, BlockState state) {
             super(ForgeryBlockEntities.NOZZLE_ENTITY, pos, state);
         }
 
-        @Override
-        public boolean canPlaceItem(final int slot, final ItemStack stack) {
-            return stack.tags().anyMatch(Predicate.isEqual(ForgeryTags.MELTABLE));
-        }
-
         public static void tick(final Level level, final BlockPos pos, final BlockState selfState, final Nozzle entity) {
-            BlockPos checkPos = pos.relative(selfState.getValue(FACING));
-            BlockState checkState = level.getBlockState(checkPos);
 
-            if (checkState.is(ForgeryBlocks.MELTED_FLUID.block)) {
-                BlockPos sourcePos = ForgeryBlocks.MeltedFluidBlock.interpretEntityPos(checkState, checkPos);
-                MeltedFluidEntity sourceEntity = level.getBlockEntity(sourcePos).is(MELTED_FLUID_ENTITY) ? (MeltedFluidEntity) level.getBlockEntity(sourcePos) : null;
+                BlockPos checkPos = pos.relative(selfState.getValue(FACING));
+                BlockState checkState = level.getBlockState(checkPos);
 
-                entity.fluidColour = level.getBlockEntityRenderData(sourcePos) != null ? (int) level.getBlockEntityRenderData(sourcePos) : 0;
-                entity.items = sourceEntity.items;
+                if (checkState.is(ForgeryBlocks.MELTED_FLUID.block)) {
+                    if (entity.ticks == 30) {
+                    BlockPos sourcePos = ForgeryBlocks.MeltedFluidBlock.interpretEntityPos(checkState, checkPos);
+                    MeltedFluidEntity sourceEntity = (MeltedFluidEntity) level.getBlockEntity(sourcePos);
 
-                level.setBlockAndUpdate(sourcePos, Blocks.AIR.defaultBlockState());
-                level.setBlockAndUpdate(checkPos, Blocks.AIR.defaultBlockState());
+                    assert sourceEntity != null;
+                    Forgery.LOGGER.info("got items: {}", sourceEntity.getItems());
+                    entity.Cast(level, sourceEntity.colour, sourcePos, checkPos);
+                    } else {
+                        entity.ticks++;
+                    }
+                }
 
-                entity.Cast(level);
-            }
         }
 
-        private void Cast(Level level) {
+        private void Cast(Level level, int colour, BlockPos sourcePos, BlockPos checkPos) {
             BlockPos castPos = this.worldPosition.below().relative(this.getBlockState().getValue(FACING).getOpposite());
             BlockState castState = level.getBlockState(castPos);
-            Cast castEntity = level.getBlockEntity(castPos).is(CAST_ENTITY) ? (Cast) level.getBlockEntity(castPos) : null;
 
-            if (castState.is(ForgeryBlocks.CAST.block)) {
-               if (castState.getValue(READY) && castEntity != null) {
-                   castEntity.castItem(this.items);
-               }
+            if (level.getBlockEntity(castPos) != null) {
+                Cast castEntity = level.getBlockEntity(castPos).is(CAST_ENTITY) ? (Cast) level.getBlockEntity(castPos) : null;
+
+                if (castState.is(ForgeryBlocks.CAST.block)) {
+                    if (castState.getValue(READY)) {
+                        castEntity.castItem(colour);
+
+                        level.setBlockAndUpdate(sourcePos, Blocks.AIR.defaultBlockState());
+                        level.setBlockAndUpdate(checkPos, Blocks.AIR.defaultBlockState());
+                    }
+                }
             }
-        }
-
-        @Override
-        public NonNullList<ItemStack> getItems() {
-            return this.items;
-        }
-
-        @Override
-        protected void loadAdditional(@NonNull ValueInput input) {
-            super.loadAdditional(input);
-            ContainerHelper.loadAllItems(input, this.items);
-        }
-
-        @Override
-        protected void saveAdditional(@NonNull ValueOutput output) {
-            ContainerHelper.saveAllItems(output, this.items);
-            super.saveAdditional(output);
         }
     }
 
@@ -339,7 +341,7 @@ public class ForgeryBlockEntities {
             return stack.tags().anyMatch(Predicate.isEqual(ForgeryTags.MELTABLE));
         }
 
-        public void castItem(NonNullList<ItemStack> items) {
+        public void castItem(int colour) {
             this.getBlockState().setValue(READY, false);
 
             ItemStack type = switch (stencil) {
@@ -347,11 +349,12 @@ public class ForgeryBlockEntities {
                                 };
 
             if (result.isEmpty()) {
-                type.set(ForgeryComponents.COMPOUND, items);
-                result = type;
+                Forgery.LOGGER.info("setting compound to: {}", colour);
+                type.set(ForgeryComponents.COMPOUND, colour);
+                this.result = type;
             }
 
-            this.getBlockState().setValue(READY, true);
+            this.setChanged();
         }
 
         @Override
@@ -375,8 +378,11 @@ public class ForgeryBlockEntities {
 
         @Override
         protected void saveAdditional(@NonNull ValueOutput output) {
-            output.store("result", ItemStack.CODEC, this.result);
-            output.store("stencil", ItemStack.CODEC, this.stencil);
+            if (!result.isEmpty()) {
+                output.store("result", ItemStack.CODEC, this.result);
+            } if (!stencil.isEmpty()) {
+                output.store("stencil", ItemStack.CODEC, this.stencil);
+            }
 
             super.saveAdditional(output);
         }

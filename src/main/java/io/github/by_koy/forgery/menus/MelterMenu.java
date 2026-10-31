@@ -105,7 +105,6 @@ public class MelterMenu extends AbstractContainerMenu {
              case soul -> data.set(0, 2);
          }
 
-         Forgery.LOGGER.info("set data to: {}", data.get(0));
          return getActive();
     }
 

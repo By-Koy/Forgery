@@ -266,7 +266,10 @@ public class ForgeryBlocks {
         @Override @NonNull
         protected InteractionResult useWithoutItem(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
             Cast entity = (Cast) level.getBlockEntity(pos);
-            player.getInventory().add(entity.getResult());
+            if (!entity.getResult().isEmpty()) {
+                player.getInventory().add(entity.getResult());
+                state.setValue(READY, true);
+            }
 
             return InteractionResult.SUCCESS;
         }
@@ -295,11 +298,7 @@ public class ForgeryBlocks {
 
         @Override @Nullable
         public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState) {
-            return newBlockEntity(worldPosition, blockState, NonNullList.of(ItemStack.EMPTY));
-        }
-
-        public BlockEntity newBlockEntity(@NonNull BlockPos worldPosition, @NonNull BlockState blockState, NonNullList<ItemStack> items) {
-            return new ForgeryBlockEntities.MeltedFluidEntity(worldPosition, blockState, items);
+            return new ForgeryBlockEntities.MeltedFluidEntity(worldPosition, blockState);
         }
 
         @Override @NonNull
