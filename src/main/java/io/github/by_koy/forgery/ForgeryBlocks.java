@@ -54,10 +54,12 @@ public class ForgeryBlocks {
     public static class ModBlockItems {
         public Block block;
         public BlockItem blockItem;
+        public BlockItemId blockItemId;
 
-        public ModBlockItems(Block block, BlockItem blockItem) {
+        public ModBlockItems(Block block, BlockItem blockItem, BlockItemId blockItemId) {
             this.block = block;
             this.blockItem = blockItem;
+            this.blockItemId = blockItemId;
         }
     }
 
@@ -104,7 +106,7 @@ public class ForgeryBlocks {
         // Register and return
         BlockItem blockItem = new BlockItem(block, new Item.Properties().useBlockDescriptionPrefix().setId(id.item()));
         Registry.register(BuiltInRegistries.ITEM, id.item(), blockItem);
-        return new ModBlockItems(block, blockItem);
+        return new ModBlockItems(block, blockItem, id);
 	}
 
     // Overloaded create() method for non-default blocks
@@ -117,7 +119,7 @@ public class ForgeryBlocks {
         // Register and return
         BlockItem blockItem = new BlockItem(block, new Item.Properties().useBlockDescriptionPrefix().setId(id.item()));
         Registry.register(BuiltInRegistries.ITEM, id.item(), blockItem);
-        return new ModBlockItems(block, blockItem);
+        return new ModBlockItems(block, blockItem, id);
     }
 
     private static Block register(ResourceKey<Block> id, Function<BlockBehaviour.Properties,Block> properties, BlockBehaviour.Properties settings) {
@@ -233,6 +235,11 @@ public class ForgeryBlocks {
         @Override @NonNull
         protected InteractionResult useWithoutItem(@NonNull BlockState state, @NonNull Level level, @NonNull BlockPos pos, @NonNull Player player, @NonNull BlockHitResult hit) {
             return InteractionResult.SUCCESS;
+        }
+
+        @Override
+        public BlockState getStateForPlacement(final @NonNull BlockPlaceContext context) {
+            return context.canPlace() ? this.defaultBlockState() : Blocks.AIR.defaultBlockState();
         }
 
         public static BlockPos interpretEntityPos(int x, int y, int z, BlockPos pos) {

@@ -9,8 +9,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.references.BlockItemIds;
 import net.minecraft.references.ItemIds;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jspecify.annotations.NonNull;
 
@@ -55,6 +57,25 @@ public class ForgeryTags {
             builder(MELTED_FLUID)
                     .add(ForgeryBlocks.MELTED_FLOWING.resourceKey)
                     .add(ForgeryBlocks.MELTED_STILL.resourceKey)
+                    .setReplace(true);
+        }
+    }
+
+    public static class ForgeryBlockTags extends FabricTagsProvider.BlockTagsProvider {
+
+        //Add tags
+        public static final TagKey<Block> SURVIVES_MELTED = TagKey.create(Registries.BLOCK, Forgery.id("survives_melted"));
+
+        public ForgeryBlockTags(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookupFuture) {
+            super(output, registryLookupFuture);
+        }
+
+        @Override
+        protected void addTags(HolderLookup.@NonNull Provider registries) {
+            builder(SURVIVES_MELTED)
+                    .add(ForgeryBlocks.MELTER.blockItemId)
+                    .add(BlockItemIds.BASALT)
+                    .addOptionalTag(BlockTags.STONE_ORE_REPLACEABLES)
                     .setReplace(true);
         }
     }

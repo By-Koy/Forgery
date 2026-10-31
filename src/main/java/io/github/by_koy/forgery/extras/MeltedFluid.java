@@ -1,7 +1,7 @@
 package io.github.by_koy.forgery.extras;
 
-import io.github.by_koy.forgery.Forgery;
 import io.github.by_koy.forgery.ForgeryBlocks;
+import io.github.by_koy.forgery.datagen.ForgeryTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -57,33 +57,40 @@ public abstract class MeltedFluid extends FlowingFluid {
 
     @Override
     protected void spread(@NonNull ServerLevel level, @NonNull BlockPos pos, @NonNull BlockState state, @NonNull FluidState fluidState) {
-        super.spread(level, pos, state, fluidState);
+//        if (state.getBlock() == ForgeryBlocks.MELTED_FLUID.block) {
+//            BlockPos entityPos = ForgeryBlocks.MeltedFluidBlock.interpretEntityPos(
+//                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosX),
+//                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosY),
+//                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosZ),
+//                    pos
+//            );
+//
+//            for (Direction direction : Direction.Plane.HORIZONTAL) {
+//                BlockPos newPos = pos.relative(direction, 1);
+//                if (canMelt(level.getBlockState(newPos))) {
+//                    level.setBlock(pos, defaultFluidState().createLegacyBlock(), Block.UPDATE_ALL);
+//                }
+//
+//                BlockState newState = level.getBlockState(newPos);
+//
+//                if (newState.getBlock() == ForgeryBlocks.MELTED_FLUID.block) {
+//                    BlockPos subPos = ForgeryBlocks.MeltedFluidBlock.createEntityPos(
+//                            newPos,
+//                            entityPos
+//                    );
+//
+//                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosX, subPos.getX());
+//                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosY, subPos.getY());
+//                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosZ, subPos.getZ());
+//
+//                level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
+//                }
+//            }
+//        }
+    }
 
-        if (state.getBlock() == ForgeryBlocks.MELTED_FLUID.block) {
-            BlockPos entityPos = ForgeryBlocks.MeltedFluidBlock.interpretEntityPos(
-                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosX),
-                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosY),
-                    state.getValue(ForgeryBlocks.MeltedFluidBlock.relPosZ),
-                    pos
-            );
-
-            for (Direction direction : Direction.Plane.HORIZONTAL) {
-                BlockPos newPos = pos.relative(direction, 1);
-                BlockState newState = level.getBlockState(newPos);
-
-                if (newState.getBlock() == ForgeryBlocks.MELTED_FLUID.block) {
-                    BlockPos subPos = ForgeryBlocks.MeltedFluidBlock.createEntityPos(
-                            newPos,
-                            entityPos
-                    );
-
-                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosX, subPos.getX());
-                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosY, subPos.getY());
-                newState.setValue(ForgeryBlocks.MeltedFluidBlock.relPosZ, subPos.getZ());
-                level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
-                }
-            }
-        }
+    private Boolean canMelt(BlockState state) {
+        return !state.is(ForgeryTags.SURVIVES_MELTED);
     }
 
     @Override
